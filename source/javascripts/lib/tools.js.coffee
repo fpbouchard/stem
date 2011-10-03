@@ -26,5 +26,3 @@ window.$path = Path = CoffeeMVC.Path =
     return false if segments1.length > segments2.length
     (return false if segments1[i] != segments2[i]) for i in [0..segments1.length - 1]
     true
-
-

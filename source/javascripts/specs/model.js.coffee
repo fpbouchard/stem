@@ -86,7 +86,7 @@ describe "Model", ->
       post.set "poster.firstName", "Jane"
       (expect post.get "poster.fullName").toEqual "Jane A. Doe"
 
-    it "should reinstall its dynamic properties when a model ", ->
+    it "should reinstall its dynamic properties when a model changes its contained object", ->
       post.set "poster", firstName: "Homer", middleName: "J.", lastName: "Simpson"
       (expect post.get "poster.fullName").toEqual "Homer J. Simpson"
 
