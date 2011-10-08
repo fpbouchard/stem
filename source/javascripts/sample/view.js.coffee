@@ -9,9 +9,8 @@ class ModeWidget extends CoffeeMVC.View
   delegates:
     "click a.toggle": -> @model.toggleMode()
 
-  constructor: ->
-    super
-    @model.bind("change:mode", @invalidate)
+  bindings:
+    "change:mode": -> @invalidate()
 
   render: ->
     $(@el).html(@template this.model)

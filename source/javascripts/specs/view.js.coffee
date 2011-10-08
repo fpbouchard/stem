@@ -77,3 +77,19 @@ describe "View", ->
       (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()
+
+  describe "with prototype-level bindings", ->
+    it "should bind to model events at construction time", ->
+      callback = sinon.spy()
+
+      class BoundView extends CoffeeMVC.View
+        bindings:
+          "change:title": callback
+
+      model = new CoffeeMVC.Model
+      view = new BoundView
+        model: model
+
+      (expect callback).not.toHaveBeenCalled()
+      model.set title: "title"
+      (expect callback).toHaveBeenCalled()

@@ -72,7 +72,6 @@ describe "Model", ->
         post.set title: "title", foo: "bar"
         (expect callback).toHaveBeenCalledWith(post, ["foo"])
 
-
     describe "with defaults", ->
 
       class PostWithDefaults extends CoffeeMVC.Model
@@ -95,10 +94,10 @@ describe "Model", ->
   describe "A model with hooks", ->
     class Post extends CoffeeMVC.Model
       beforeSet: (attributes) ->
-        attributes.title = "overridden"
+        attributes.title = "intercepted"
 
     it "should allow to modify attributes before they are set (beforeSet)", ->
       post = new Post
         title: "new"
       post.set title: "changed"
-      (expect post.get "title").toEqual "overridden"
+      (expect post.get "title").toEqual "intercepted"

@@ -6,4 +6,4 @@ class Context extends CoffeeMVC.Model
     @set(mode: if mode == "MODE A" then "MODE B" else "MODE A")
 
 
-window.Sample.context = new Context
+Sample.context = new Context

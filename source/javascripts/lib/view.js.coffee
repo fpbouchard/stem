@@ -12,18 +12,24 @@ class CoffeeMVC.View
     @[attribute] = value for attribute, value of attributes
     @_resolveElement()
     @_installDelegates()
+    @_installBindings()
 
   _resolveElement: ->
     return unless @el
     @el = CoffeeMVC.DOM.select(@el)[0] if _.isString(@el)
 
   _installDelegates: ->
-    return unless @delegates
+    return unless @delegates?
     for delegateDescriptor, handler of @delegates
       matches = delegateDescriptor.match delegateDescriptorPattern
       throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
       [match, eventName, selector] = matches
       CoffeeMVC.DOM.delegate @el, selector, eventName, _.bind(handler, this)
+
+  _installBindings: ->
+    return unless @bindings? && @model?
+    for eventDescriptor, handler of @bindings
+      @model.bind eventDescriptor, handler
 
   # Internal call tied to the invalidate system
   _modelChange: =>
