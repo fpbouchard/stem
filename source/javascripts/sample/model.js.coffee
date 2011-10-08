@@ -1,5 +1,5 @@
 class Context extends CoffeeMVC.Model
-  @defaults:
+  defaults:
     mode: "mode1"
 
 window.Sample.context = new Context

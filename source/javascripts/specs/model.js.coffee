@@ -76,7 +76,7 @@ describe "Model", ->
     describe "with defaults", ->
 
       class PostWithDefaults extends CoffeeMVC.Model
-        @defaults:
+        defaults:
           title: "default"
           body: "body"
 

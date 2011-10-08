@@ -1,24 +1,24 @@
-class ModeToggler extends CoffeeMVC.View
+class ModeWidget extends CoffeeMVC.View
   el: "#mode-toggler"
   template: _.template '''
-                       <span class="mode">
+                       <div class="mode">
                          <%= get("mode") %>
-                       </span>
+                       </div>
                        <a href="javascript:void(0)" class="toggle">Toggle!</a>
                        '''
   delegates:
     "click a.toggle": ->
       mode = this.model.get "mode"
-      this.model.set mode: if mode == "mode1" then "mode2" else "mode1"
+      this.model.set(mode: if mode == "mode1" then "mode2" else "mode1")
 
   constructor: ->
     super
-    @model.bind "change:mode", @invalidate
+    @model.bind("change:mode", @invalidate)
 
   render: ->
-    $(@el).html @template this.model
+    $(@el).html(@template this.model)
 
-modeToggler = new ModeToggler
+modeToggler = new ModeWidget
   model: Sample.context
 
 modeToggler.render()

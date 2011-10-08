@@ -3,12 +3,12 @@
 #
 # **Models** hold data and binds **events** to change in data.
 #
-# **Model** subclasses can define their default attributes in their class definition by setting the `@defaults` class property.
+# **Model** subclasses can define their default attributes in their class definition by setting the `defaults` property.
 #
 # Ex.:
 #
 #     class Context extends Model
-#       @defaults
+#       defaults
 #         mode: "standard"
 #
 #     context = new Context
@@ -27,7 +27,7 @@ class CoffeeMVC.Model
   # Note that attributes passed at instanciation win over default, class-level values.
   #
   constructor: (attributes = {}) ->
-    attributes = (_.extend {}, @constructor.defaults, attributes) if @constructor.defaults
+    attributes = (_.extend {}, @defaults, attributes) if @defaults
     @attributes = attributes
 
   # Get an attribute's value, by its key.
