@@ -1,115 +1,104 @@
 describe "Model", ->
-
-  describe "a simple model", ->
-
+  describe "A simple model", ->
     class Post extends CoffeeMVC.Model
 
-    it "should be able to read its properties at level zero", ->
+    it "should implement Events", ->
       post = new Post
-        title: "Yay!",
-      (expect post.get "title").toEqual "Yay!"
+      (expect post["bind"]).toBeDefined()
+      (expect post["trigger"]).toBeDefined()
 
-    it "should be able to read its properties in a subtree", ->
-      post = new Post
-        poster:
-          firstName: "John"
-          lastName: "Smith"
-      (expect post.get "poster").toEqual firstName: "John", lastName: "Smith"
-      (expect post.get "poster.firstName").toEqual "John"
-      (expect post.get "poster.lastName").toEqual "Smith"
 
-    it "should not fail when reading undefined properties", ->
-      post = new Post
-      expect(post.get "foo").toBeUndefined()
-      expect(post.get "foo.bar").toBeUndefined()
+    describe "with attributes", ->
 
-    it "should allow setting a simple property", ->
-      post = new Post
-        title: "Yay!"
-      # Existing property
-      post.set "title", "changed"
-      (expect post.get "title").toEqual "changed"
-      # New property
-      post.set "new", "exists"
-      (expect post.get "new").toEqual "exists"
+      post = null
 
-    it "should allow setting property in subtrees", ->
-      post = new Post
-        poster:
-          firstName: "John"
-          lastName: "Smith"
-      post.set "poster.firstName", "Pete"
-      (expect post.get "poster.firstName").toEqual "Pete"
+      beforeEach ->
+        post = new Post
+          title: "title"
 
-      post.set "poster", firstName: "Jane", lastName: "Doe"
-      (expect post.get "poster").toEqual firstName: "Jane", lastName: "Doe"
+      it "should be initialized with initial values", ->
+        (expect post["attributes"]).toBeDefined()
+        (expect post.attributes["title"]).toEqual "title"
 
-  describe "the model class", ->
+      it "should get an attribute", ->
+        (expect post.get "title").toEqual "title"
 
-    it "should allow defining dynamic properties", ->
-      class Post extends CoffeeMVC.Model
-        @property "poster.fullName",
-          get: -> "#{@get "poster.firstName"} #{@get "poster.middleName"} #{@get "poster.lastName"}"
-      (expect Post.properties.length).toEqual 1
+      it "should set an attribute", ->
+        post.set title: "new"
+        (expect post.get "title").toEqual "new"
 
-    it "should have its own list of dynamic properties", ->
-      class Obj1 extends CoffeeMVC.Model
-        @property "prop1",
-          get: -> "val1"
-      class Obj2 extends CoffeeMVC.Model
-        @property "prop2",
-          get: -> "val2"
+    describe "events", ->
 
-      (expect Obj1.properties.length).toEqual 1
-      (expect Obj1.properties[0].path).toEqual "prop1"
-      (expect Obj2.properties.length).toEqual 1
-      (expect Obj2.properties[0].path).toEqual "prop2"
+      post = null
 
-  describe "a model with dynamic properties", ->
+      beforeEach ->
+        post = new Post
+          title: "title"
+
+      it "should trigger a change event when any attributes change", ->
+        callback = sinon.spy()
+        post.bind "change", callback
+        (expect callback).not.toHaveBeenCalled()
+        post.set title: "new", foo: "bar"
+        (expect callback).toHaveBeenCalledWith(post, [["title", "new"], ["foo", "bar"]])
+
+      it "should trigger a change event when specific attributes change", ->
+        titleCallback = sinon.spy()
+        post.bind "change:title", titleCallback
+        fooCallback = sinon.spy()
+        post.bind "change:foo", fooCallback
+
+        (expect titleCallback).not.toHaveBeenCalled()
+        (expect fooCallback).not.toHaveBeenCalled()
+        post.set title: "new"
+        (expect titleCallback).toHaveBeenCalledWith(post, "new")
+        (expect fooCallback).not.toHaveBeenCalled()
+
+      it "should not trigger a specific change event for fields that are set but did not change", ->
+        callback = sinon.spy()
+        post.bind "change:title", callback
+
+        (expect callback).not.toHaveBeenCalled()
+        post.set title: "title"
+        (expect callback).not.toHaveBeenCalled()
+
+      it "should not trigger a global change event for fields that are set but did not change", ->
+        callback = sinon.spy()
+        post.bind "change", callback
+
+        (expect callback).not.toHaveBeenCalled()
+        post.set title: "title"
+        (expect callback).not.toHaveBeenCalled()
+        post.set title: "title", foo: "bar"
+        (expect callback).toHaveBeenCalledWith(post, [["foo", "bar"]])
+
+
+    describe "with defaults", ->
+
+      class PostWithDefaults extends CoffeeMVC.Model
+        @defaults:
+          title: "default"
+          body: "body"
+
+      it "should initialize with its defaults", ->
+        post = new PostWithDefaults
+        (expect post.get "title").toEqual "default"
+        (expect post.get "body").toEqual "body"
+
+      it "should priorize attributes passed at the constructor over its defaults", ->
+        post = new PostWithDefaults
+          title: "overridden"
+        (expect post.get "title").toEqual "overridden"
+        (expect post.get "body").toEqual "body"
+
+
+  describe "A model with hooks", ->
     class Post extends CoffeeMVC.Model
-      @property "poster.fullName",
-        get: -> "#{@get "poster.firstName"} #{@get "poster.middleName"} #{@get "poster.lastName"}"
+      beforeSet: (attributes) ->
+        attributes.title = "overridden"
 
-    post = null
-
-    beforeEach ->
+    it "should allow to modify attributes before they are set (beforeSet)", ->
       post = new Post
-        poster:
-          firstName: "John"
-          middleName: "A."
-          lastName: "Doe"
-
-    it "should resolve its dynamic properties", ->
-      (expect post.get "poster.fullName").toEqual "John A. Doe"
-
-    it "should resolve its dynamic properties at runtime", ->
-      post.set "poster.firstName", "Jane"
-      (expect post.get "poster.fullName").toEqual "Jane A. Doe"
-
-    it "should reinstall its dynamic properties when a model changes its contained object", ->
-      post.set "poster", firstName: "Homer", middleName: "J.", lastName: "Simpson"
-      (expect post.get "poster.fullName").toEqual "Homer J. Simpson"
-
-  describe "an observable model", ->
-    class Post extends CoffeeMVC.Model
-
-    post = null
-
-    beforeEach ->
-      post = new Post
-        poster:
-          firstName: "John"
-          middleName: "A."
-          lastName: "Doe"
-
-    it "should notify when a property is set", ->
-      called = false
-      observer = new CoffeeMVC.Observer
-        set: (event, path, value) ->
-          called = true
-          (expect path).toEqual "poster.firstName"
-          (expect value).toEqual "Jane"
-
-      post.attach observer
-      post.set "poster.firstName", "Jane"
-      (expect called).toBeTruthy()
+        title: "new"
+      post.set title: "changed"
+      (expect post.get "title").toEqual "overridden"

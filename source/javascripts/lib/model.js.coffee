@@ -1,35 +1,68 @@
-#= require lib/notifications
-#= require lib/tools
+# Models
+# ======
+#
+# **Models** hold data and binds **events** to change in data.
+#
+# **Model** subclasses can define their default attributes in their class definition by setting the `@defaults` class property.
+#
+# Ex.:
+#
+#     class Context extends Model
+#       @defaults
+#         mode: "standard"
+#
+#     context = new Context
+#     expect(context.get "mode").toEqual "standard"
+#
+class CoffeeMVC.Model
+  @implements CoffeeMVC.Events
 
-class CoffeeMVC.Model extends CoffeeMVC.Subject
+  # The **Model** constructor also allows to set initial attributes in the model by passing the hash directly:
+  #
+  #     context = new Context
+  #       mode: "extended"
+  #
+  #     expect(context.get "mode").toEqual "extended"
+  #
+  # Note that attributes passed at instanciation win over default, class-level values.
+  #
+  constructor: (attributes = {}) ->
+    attributes = (_.extend {}, @constructor.defaults, attributes) if @constructor.defaults
+    @attributes = attributes
 
-  @property: (path, descriptor) ->
-    @properties ||= []
-    @properties.push path: path, descriptor: descriptor
+  # Get an attribute's value, by its key.
+  get: (attribute) ->
+    @attributes[attribute]
 
-  installDynamicProperty: (property) ->
-    # Bind the getter and setter to the instance of the model
-    descriptor = {}
-    for own field, value of property.descriptor
-      value = value.bind(@) if typeof value == "function"
-      descriptor[field] = value
+  # Set attributes.
+  set: (attributes) ->
+    changes = []
 
-    [container, key] = $path.walk property.path, @data
-    Object.defineProperty container, key, descriptor
+    # Prevent reentrancy of the global change event (see below)
+    wasChanging = @_changing
+    @_changing = true
 
-  updateDynamicProperties: (path) ->
-    # If any dynamic property path is contained in the changed path, resinstall it
-    (@installDynamicProperty property) for property in @constructor.properties when ($path.contains path, property.path) if @constructor.properties?
+    # Allow hooks to sanitize/handle changes before they are committed
+    @beforeSet attributes if @beforeSet?
 
-  # Build a model using an initial tree
-  constructor: (@data = {}) ->
-    (@installDynamicProperty property) for property in @constructor.properties if @constructor.properties?
+    for key, value of attributes
+      # Only *changed* attributes set in the `attributes` hash will be actually changed. The comparison is done using [underscore.js](http://documentcloud.github.com/underscore/)'s `isEqual` method.
+      unless _.isEqual @attributes[key], value
+        # Remember that this attribute changed
+        changes.push [key, value]
+        # Change it in the model
+        @attributes[key] = value
+        # Trigger a *specific* change event
+        @trigger "change:#{key}", this, value
 
-  get: (path) ->
-    $path.read path, @data
+    # Avoid triggering multiple global "change" events. This way, if an event
+    # handler further changes the model, this ensures that only one global
+    # "change" event will be fired at the end of the scope of the first change.
+    if !wasChanging
+      # Trigger the *global* change event. Only trigger change if any passed attribute actually changed
+      @trigger "change", this, changes if changes.length > 0
+      # Leave the global _changing flag on until the scope of the first change
+      # wraps up (hence this line's enclosing in the `!wasChanging` condition)
+      @_changing = false
 
-  set: (path, value) ->
-    $path.write path, @data, value
-    @updateDynamicProperties path
-    @notify "set", path, value
     this

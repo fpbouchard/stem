@@ -1,3 +1,3 @@
-#= require "specs/path"
-#= require "specs/notifications"
+#= require "specs/event"
 #= require "specs/model"
+#= require "specs/view"

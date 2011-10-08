@@ -3,13 +3,17 @@
 <html>
 <head>
 
-  <link rel="shortcut icon" type="image/png" href="javascripts/jasmine/jasmine_favicon.png">
+  <link rel="shortcut icon" type="image/png" href="javascripts/vendor/jasmine/jasmine_favicon.png">
 
   <%= stylesheet_link_tag "jasmine.css" %>
-  <%= javascript_include_tag "jasmine/jasmine" %>
-  <%= javascript_include_tag "jasmine/jasmine-html" %>
+  <%= javascript_include_tag "vendor/jasmine/jasmine" %>
+  <%= javascript_include_tag "vendor/jasmine/jasmine-html" %>
+
+  <%= javascript_include_tag "vendor/sinon-1.2.0" %>
+  <%= javascript_include_tag "vendor/jasmine-sinon" %>
 
   <!-- include source files here... -->
+  <%= javascript_include_tag "vendor/underscore" %>
   <%= javascript_include_tag "lib/coffeemvc" %>
 
   <!-- include spec files here... -->
