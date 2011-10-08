@@ -7,9 +7,7 @@ class ModeWidget extends CoffeeMVC.View
                        <a href="javascript:void(0)" class="toggle">Toggle!</a>
                        '''
   delegates:
-    "click a.toggle": ->
-      mode = this.model.get "mode"
-      this.model.set(mode: if mode == "mode1" then "mode2" else "mode1")
+    "click a.toggle": -> @model.toggleMode()
 
   constructor: ->
     super
