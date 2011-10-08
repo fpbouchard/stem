@@ -10,9 +10,9 @@ class CoffeeMVC.View
   constructor: (attributes = {}) ->
     # Views can be initialized with attributes
     @[attribute] = value for attribute, value of attributes
+    @_installBindings()
     @_resolveElement()
     @_installDelegates()
-    @_installBindings()
 
   _resolveElement: ->
     return unless @el
@@ -24,12 +24,16 @@ class CoffeeMVC.View
       matches = delegateDescriptor.match delegateDescriptorPattern
       throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
       [match, eventName, selector] = matches
+      if _.isString(handler)
+        throw "Undefined delegate callback: \"#{handler}\"" unless handler = @[handler]
       CoffeeMVC.DOM.delegate @el, selector, eventName, _.bind(handler, this)
 
   _installBindings: ->
     return unless @bindings? && @model?
     for eventDescriptor, handler of @bindings
-      @model.bind eventDescriptor, handler
+      if _.isString(handler)
+        throw "Undefined binding callback: \"#{handler}\"" unless handler = @[handler]
+      @model.bind eventDescriptor, _.bind(handler, this)
 
   # Internal call tied to the invalidate system
   _modelChange: =>

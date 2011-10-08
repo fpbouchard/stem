@@ -64,14 +64,25 @@ describe "View", ->
       expect(-> new CoffeeMVC.View delegates: "no-selector": ->).toThrow()
       expect(-> new CoffeeMVC.View delegates: "": ->).toThrow()
 
-    it "should install delegates on the view element", ->
+    it "should install delegates on the view element (function handler)", ->
       domSpy = sinon.spy(CoffeeMVC.DOM, "delegate")
 
-      handler = ->
-      delegates = "click .me": handler
-      el = {}
+      delegates = "click .me": ->
       view = new CoffeeMVC.View
-        el: el
+        delegates: delegates
+      (expect view.delegates).toBe delegates
+      (expect domSpy).toHaveBeenCalled()
+
+      domSpy.restore()
+
+    it "should install delegates on the view element (method handler)", ->
+      domSpy = sinon.spy(CoffeeMVC.DOM, "delegate")
+
+      class ClickMeView extends CoffeeMVC.View
+        clickme: ->
+
+      delegates = "click .me": "clickme"
+      view = new ClickMeView
         delegates: delegates
       (expect view.delegates).toBe delegates
       (expect domSpy).toHaveBeenCalled()
@@ -79,12 +90,28 @@ describe "View", ->
       domSpy.restore()
 
   describe "with prototype-level bindings", ->
-    it "should bind to model events at construction time", ->
+    it "should bind to model events at construction time (function handler)", ->
       callback = sinon.spy()
 
       class BoundView extends CoffeeMVC.View
         bindings:
           "change:title": callback
+
+      model = new CoffeeMVC.Model
+      view = new BoundView
+        model: model
+
+      (expect callback).not.toHaveBeenCalled()
+      model.set title: "title"
+      (expect callback).toHaveBeenCalled()
+
+    it "should bind to model events at construction time (method handler)", ->
+      class BoundView extends CoffeeMVC.View
+        bindings:
+          "change:title": "callback"
+        callback: ->
+
+      callback = sinon.spy(BoundView.prototype, "callback")
 
       model = new CoffeeMVC.Model
       view = new BoundView
