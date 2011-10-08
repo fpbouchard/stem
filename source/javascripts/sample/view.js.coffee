@@ -16,7 +16,7 @@ class ModeWidget extends CoffeeMVC.View
   render: ->
     $(@el).html(@template this.model)
 
-modeToggler = new ModeWidget
+modeWidget = new ModeWidget
   model: Sample.context
 
-modeToggler.render()
+modeWidget.render()
