@@ -1,3 +1,6 @@
+#= require_self
 #= require lib/coffeemvc
-#= require sample/context
 #= require sample/model
+#= require sample/view
+
+window.Sample ||= {}

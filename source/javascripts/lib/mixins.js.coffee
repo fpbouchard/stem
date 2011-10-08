@@ -1,5 +1,3 @@
-window.CoffeeMVC ?= {}
-
 # CoffeeScript Mixins, from https://github.com/jashkenas/coffee-script/wiki/Mixins
 implements = (classes...) ->
   for klass in classes

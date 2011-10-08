@@ -7,10 +7,15 @@ delegateDescriptorPattern = ///
 class CoffeeMVC.View
   @implements CoffeeMVC.Events
 
-  constructor: (@attributes = {}) ->
+  constructor: (attributes = {}) ->
     # Views can be initialized with attributes
-    @[attribute] = value for attribute, value of @attributes
+    @[attribute] = value for attribute, value of attributes
+    @_resolveElement()
     @_installDelegates()
+
+  _resolveElement: ->
+    return unless @el
+    @el = CoffeeMVC.DOM.select(@el)[0] if _.isString(@el)
 
   _installDelegates: ->
     return unless @delegates
@@ -18,7 +23,7 @@ class CoffeeMVC.View
       matches = delegateDescriptor.match delegateDescriptorPattern
       throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
       [match, eventName, selector] = matches
-      CoffeeMVC.DOM.delegate @el, selector, eventName, handler
+      CoffeeMVC.DOM.delegate @el, selector, eventName, _.bind(handler, this)
 
   # Internal call tied to the invalidate system
   _modelChange: =>

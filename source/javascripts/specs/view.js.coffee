@@ -15,6 +15,24 @@ describe "View", ->
     (expect view["a"]).toEqual 1
     (expect view["b"]).toEqual 2
 
+  describe "elements", ->
+    it "should try to resolve this.el (set at prototype-level) to an actual DOM element through the CoffeeMVC.DOM facade", ->
+      class ViewWithElement extends CoffeeMVC.View
+        el: "#some-el"
+
+      domSpy = sinon.spy CoffeeMVC.DOM, "select"
+      new ViewWithElement
+      (expect domSpy).toHaveBeenCalledWith "#some-el"
+
+      domSpy.restore()
+
+    it "should try to resolve this.el (set at instance-level) to an actual DOM element through the CoffeeMVC.DOM facade", ->
+      domSpy = sinon.spy CoffeeMVC.DOM, "select"
+      new CoffeeMVC.View el: "#some-el"
+      (expect domSpy).toHaveBeenCalledWith "#some-el"
+
+      domSpy.restore()
+
   describe "invalidation", ->
 
     it "should handle invalidation and rendering through model updates", ->
@@ -56,6 +74,6 @@ describe "View", ->
         el: el
         delegates: delegates
       (expect view.delegates).toBe delegates
-      (expect domSpy).toHaveBeenCalledWith(el, ".me", "click", handler)
+      (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()

@@ -1,3 +1,5 @@
-class Period extends CoffeeMVC.Model
+class Context extends CoffeeMVC.Model
+  @defaults:
+    mode: "mode1"
 
-class Plan extends CoffeeMVC.Model
+window.Sample.context = new Context
