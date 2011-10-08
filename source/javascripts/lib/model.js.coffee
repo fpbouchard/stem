@@ -49,7 +49,7 @@ class CoffeeMVC.Model
       # Only *changed* attributes set in the `attributes` hash will be actually changed. The comparison is done using [underscore.js](http://documentcloud.github.com/underscore/)'s `isEqual` method.
       unless _.isEqual @attributes[key], value
         # Remember that this attribute changed
-        changes.push [key, value]
+        changes.push key
         # Change it in the model
         @attributes[key] = value
         # Trigger a *specific* change event

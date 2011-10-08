@@ -40,7 +40,7 @@ describe "Model", ->
         post.bind "change", callback
         (expect callback).not.toHaveBeenCalled()
         post.set title: "new", foo: "bar"
-        (expect callback).toHaveBeenCalledWith(post, [["title", "new"], ["foo", "bar"]])
+        (expect callback).toHaveBeenCalledWith(post, ["title", "foo"])
 
       it "should trigger a change event when specific attributes change", ->
         titleCallback = sinon.spy()
@@ -70,7 +70,7 @@ describe "Model", ->
         post.set title: "title"
         (expect callback).not.toHaveBeenCalled()
         post.set title: "title", foo: "bar"
-        (expect callback).toHaveBeenCalledWith(post, [["foo", "bar"]])
+        (expect callback).toHaveBeenCalledWith(post, ["foo"])
 
 
     describe "with defaults", ->

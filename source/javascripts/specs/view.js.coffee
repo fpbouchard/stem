@@ -46,7 +46,7 @@ describe "View", ->
 
       spy = sinon.spy view, "render"
 
-      # This is not a invalidateOn field, spy should not have been called
+      # This is not a bound field, spy should not have been called
       model.set foo: "bar"
       (expect spy).not.toHaveBeenCalled()
 
@@ -54,7 +54,7 @@ describe "View", ->
       model.set title: "new title", body: "new body"
       (expect spy).toHaveBeenCalledOnce()
 
-      # This is not a invalidateOn field, spy should not have been called again
+      # This is not a bound field, spy should not have been called again
       model.set foo: "bar"
       (expect spy).toHaveBeenCalledOnce()
 
