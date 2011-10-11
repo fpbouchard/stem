@@ -20,7 +20,7 @@ $side-gutter-width: $gutter-width;
 
 body {
   font-family: $font-family;
-  color: $font-color; 
+  color: $font-color;
 }
 
 a {
@@ -29,4 +29,8 @@ a {
 
 #main {
   padding: 50px;
+}
+
+#mode-toggler {
+  margin: 20px 0;
 }

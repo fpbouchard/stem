@@ -3,7 +3,7 @@ describe "Event mixin", ->
   obj = null
 
   beforeEach ->
-    obj = new CoffeeMVC.Events
+    obj = new Stem.Events
 
   describe "single events", ->
 

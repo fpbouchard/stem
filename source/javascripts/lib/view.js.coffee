@@ -4,8 +4,8 @@ delegateDescriptorPattern = ///
   (.+)  # Delegate selector
 ///
 
-class CoffeeMVC.View
-  @implements CoffeeMVC.Events
+class Stem.View
+  @implements Stem.Events
 
   constructor: (attributes = {}) ->
     # Views can be initialized with attributes
@@ -16,7 +16,7 @@ class CoffeeMVC.View
 
   _resolveElement: ->
     return unless @el
-    @el = CoffeeMVC.DOM.select(@el)[0] if _.isString(@el)
+    @el = Stem.DOM.select(@el)[0] if _.isString(@el)
 
   _installDelegates: ->
     return unless @delegates?
@@ -26,7 +26,7 @@ class CoffeeMVC.View
       [match, eventName, selector] = matches
       if _.isString(handler)
         throw "Undefined delegate callback: \"#{handler}\"" unless handler = @[handler]
-      CoffeeMVC.DOM.delegate @el, selector, eventName, _.bind(handler, this)
+      Stem.DOM.delegate @el, selector, eventName, _.bind(handler, this)
 
   _installBindings: ->
     return unless @bindings? && @model?

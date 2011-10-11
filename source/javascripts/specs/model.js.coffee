@@ -1,6 +1,6 @@
 describe "Model", ->
   describe "A simple model", ->
-    class Post extends CoffeeMVC.Model
+    class Post extends Stem.Model
 
     it "should implement Events", ->
       post = new Post
@@ -74,7 +74,7 @@ describe "Model", ->
 
     describe "with defaults", ->
 
-      class PostWithDefaults extends CoffeeMVC.Model
+      class PostWithDefaults extends Stem.Model
         defaults:
           title: "default"
           body: "body"
@@ -92,7 +92,7 @@ describe "Model", ->
 
 
   describe "A model with hooks", ->
-    class Post extends CoffeeMVC.Model
+    class Post extends Stem.Model
       beforeSet: (attributes) ->
         attributes.title = "intercepted"
 
