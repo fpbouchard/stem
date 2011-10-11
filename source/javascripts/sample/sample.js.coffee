@@ -15,16 +15,16 @@ class ModeWidget extends Stem.View
     <a href="javascript:void(0)" class="toggle">Toggle!</a>
   '''
 
-  delegates:
+  @delegates
     "click a.toggle": "toggleMode"
 
-  bindings:
+  @bindings
     "change:mode": "invalidate"
 
   render: ->
     $(@el).html(@template this.model)
 
-  toggleMode: ->
+  toggleMode: =>
     @model.toggleMode()
 
 context = new Context

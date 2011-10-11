@@ -7,6 +7,12 @@ delegateDescriptorPattern = ///
 class Stem.View
   @implements Stem.Events
 
+  @bindings = (bindings) ->
+    _.extend @_bindings ||= {}, bindings
+
+  @delegates = (delegates) ->
+    _.extend @_delegates ||= {}, delegates
+
   constructor: (attributes = {}) ->
     # Views can be initialized with attributes
     @[attribute] = value for attribute, value of attributes
@@ -19,21 +25,21 @@ class Stem.View
     @el = Stem.DOM.select(@el)[0] if _.isString(@el)
 
   _installDelegates: ->
-    return unless @delegates?
-    for delegateDescriptor, handler of @delegates
+    return unless @constructor._delegates?
+    for delegateDescriptor, handler of @constructor._delegates
       matches = delegateDescriptor.match delegateDescriptorPattern
       throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
       [match, eventName, selector] = matches
       if _.isString(handler)
         throw "Undefined delegate callback: \"#{handler}\"" unless handler = @[handler]
-      Stem.DOM.delegate @el, selector, eventName, _.bind(handler, this)
+      Stem.DOM.delegate @el, selector, eventName, handler
 
   _installBindings: ->
-    return unless @bindings? && @model?
-    for eventDescriptor, handler of @bindings
+    return unless @constructor._bindings? && @model?
+    for eventDescriptor, handler of @constructor._bindings
       if _.isString(handler)
         throw "Undefined binding callback: \"#{handler}\"" unless handler = @[handler]
-      @model.bind eventDescriptor, _.bind(handler, this)
+      @model.bind eventDescriptor, handler
 
   # Internal call tied to the invalidate system
   _modelChange: =>
@@ -52,5 +58,5 @@ class Stem.View
 
   # Render is where the actual markup generation should take place. Any kind of
   # generation technique (DOM building, templating) can be used. Render should
-  # return the view itself.
+  # return the view itself. Build on `@el`.
   render: -> this

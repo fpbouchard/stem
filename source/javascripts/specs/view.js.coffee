@@ -60,17 +60,23 @@ describe "View", ->
 
   describe "delegates", ->
     it "should validate delegate descriptors", ->
-      expect(-> new Stem.View delegates: "eventName selector": ->).not.toThrow()
-      expect(-> new Stem.View delegates: "no-selector": ->).toThrow()
-      expect(-> new Stem.View delegates: "": ->).toThrow()
+      instanciateDelegatedView = (delegates) ->
+        ->
+          class DelegatedView extends Stem.View
+            @delegates delegates
+          new DelegatedView
+      expect(instanciateDelegatedView "eventName selector": ->).not.toThrow()
+      expect(instanciateDelegatedView "no-selector": ->).toThrow()
+      expect(instanciateDelegatedView "": ->).toThrow()
 
     it "should install delegates on the view element (function handler)", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
-      delegates = "click .me": ->
-      view = new Stem.View
-        delegates: delegates
-      (expect view.delegates).toBe delegates
+      class DelegatedView extends Stem.View
+        @delegates
+          "click .me": ->
+
+      view = new DelegatedView
       (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()
@@ -78,13 +84,12 @@ describe "View", ->
     it "should install delegates on the view element (method handler)", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
-      class ClickMeView extends Stem.View
+      class DelegatedView extends Stem.View
+        @delegates
+          "click .me": "clickme"
         clickme: ->
 
-      delegates = "click .me": "clickme"
-      view = new ClickMeView
-        delegates: delegates
-      (expect view.delegates).toBe delegates
+      view = new DelegatedView
       (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()
@@ -94,7 +99,7 @@ describe "View", ->
       callback = sinon.spy()
 
       class BoundView extends Stem.View
-        bindings:
+        @bindings
           "change:title": callback
 
       model = new Stem.Model
@@ -107,7 +112,7 @@ describe "View", ->
 
     it "should bind to model events at construction time (method handler)", ->
       class BoundView extends Stem.View
-        bindings:
+        @bindings
           "change:title": "callback"
         callback: ->
 
