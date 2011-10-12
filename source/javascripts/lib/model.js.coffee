@@ -53,7 +53,7 @@ class Stem.Model
         # Change it in the model
         @attributes[key] = value
         # Trigger a *specific* change event
-        @trigger "change:#{key}", this, value
+        @trigger "change:#{key}", this, key, value
 
     # Avoid triggering multiple global "change" events. This way, if an event
     # handler further changes the model, this ensures that only one global

@@ -64,3 +64,20 @@ describe "Event mixin", ->
         (expect callback).toHaveBeenCalledOnce()
         obj.trigger "bar"
         (expect callback).toHaveBeenCalledTwice()
+
+  describe "star descriptor", ->
+
+    it "should bind to all events using the '*' event descriptor", ->
+      starCallback = sinon.spy()
+      barCallback = sinon.spy()
+      obj.bind "*", starCallback
+      obj.bind "bar", barCallback
+
+      (expect starCallback).not.toHaveBeenCalled()
+      (expect barCallback).not.toHaveBeenCalled()
+      obj.trigger "foo"
+      (expect starCallback).toHaveBeenCalledWith "foo"
+      (expect barCallback).not.toHaveBeenCalled()
+      obj.trigger "bar", 1, "baz"
+      (expect starCallback).toHaveBeenCalledWith "bar", 1, "baz"
+      (expect barCallback).toHaveBeenCalledWith 1, "baz"

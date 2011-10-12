@@ -9,6 +9,12 @@ Ajax = Stem.Ajax =
           model = model?[key] for key in modelKeys
           throw "Invalid model path: \"#{command.directives.modelPath}\"" unless model?
           model.set command.directives.attributes
+        when "updateCollection"
+          collectionKeys = command.directives.collectionPath.split "."
+          collection = window
+          collection = collection?[key] for key in collectionKeys
+          throw "Invalid collection path: \"#{command.directives.collectionPath}\"" unless collection?
+          collection.reset command.directives.models
         else
           throw "Unknown ajax response command: '#{command.action}'"
 

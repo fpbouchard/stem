@@ -51,7 +51,7 @@ describe "Model", ->
         (expect titleCallback).not.toHaveBeenCalled()
         (expect fooCallback).not.toHaveBeenCalled()
         post.set title: "new"
-        (expect titleCallback).toHaveBeenCalledWith(post, "new")
+        (expect titleCallback).toHaveBeenCalledWith(post, "title", "new")
         (expect fooCallback).not.toHaveBeenCalled()
 
       it "should not trigger a specific change event for fields that are set but did not change", ->
