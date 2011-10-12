@@ -44,7 +44,7 @@ class Stem.Events
       # Lazy init the handler array for this event
       handlers = @bindings[event] ||= []
       # Do not register the same event/handler combination twice, just ignore
-      handlers.push handler if handlers.indexOf(handler) < 0
+      handlers.push handler if _.indexOf(handlers, handler) < 0
     this
 
   # Unbinds a specific event/handler combination.
@@ -55,7 +55,7 @@ class Stem.Events
     # Unbind every event in the descriptor individually
     for event in events
       handlers = @bindings[event]
-      handlers.splice index, 1 if handlers? and (index = handlers.indexOf handler) >= 0
+      handlers.splice index, 1 if handlers? and (index = _.indexOf(handlers, handler)) >= 0
     this
 
   # Trigger an event with an optional number of arguments

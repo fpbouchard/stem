@@ -27,6 +27,15 @@ describe "Model", ->
         post.set title: "new"
         (expect post.get "title").toEqual "new"
 
+      it "should validate the arguments of the 'set' call", ->
+        arraySet = ->
+          post.set "title", "value"
+        expect(arraySet).toThrow()
+
+        objectSet = ->
+          post.set "title": "value"
+        expect(objectSet).not.toThrow()
+
     describe "events", ->
 
       post = null

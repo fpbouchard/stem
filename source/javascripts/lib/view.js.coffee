@@ -16,6 +16,8 @@ class Stem.View
   constructor: (attributes = {}) ->
     # Views can be initialized with attributes
     @[attribute] = value for attribute, value of attributes
+    throw "Cannot bind to both a model and a collection" if @model? && @collection?
+    @bindable = @model || @collection
     @_installBindings()
     @_resolveElement()
     @_installDelegates()
@@ -35,26 +37,27 @@ class Stem.View
       Stem.DOM.delegate @el, selector, eventName, handler
 
   _installBindings: ->
-    return unless @constructor._bindings? && @model?
+    return unless @constructor._bindings? && @bindable
     for eventDescriptor, handler of @constructor._bindings
       if _.isString(handler)
         throw "Undefined binding callback: \"#{handler}\"" unless handler = @[handler]
-      @model.bind eventDescriptor, handler
+      @bindable.bind eventDescriptor, handler
 
   # Internal call tied to the invalidate system
-  _modelChange: =>
+  _bindableChange: =>
     # Invalidating binds only to the next model change event, unbind immediately
-    @model.unbind "change", @_modelChange
+    @bindable.unbind "change", @_bindableChange
     # Then render the view
     @render()
 
   # A view can optionally bind model changes to the invalidate method. If so,
-  # the view will automatically call render when all the individual model
-  # changes will be done. This way, one can listen to multiple single-attribute
-  # changes and still re-render the view only once per call to model#set.
+  # the view will automatically call render when all the individual model or
+  # collection changes will be done. This way, one can listen to multiple
+  # single-attribute changes and still re-render the view only once per call to
+  # model#set.
   invalidate: =>
-    # Render once all model updates are done
-    @model.bind "change", @_modelChange
+    # Render once all bindable updates are done
+    @bindable.bind "change", @_bindableChange
 
   # Render is where the actual markup generation should take place. Any kind of
   # generation technique (DOM building, templating) can be used. Render should

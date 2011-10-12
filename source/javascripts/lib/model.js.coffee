@@ -36,6 +36,9 @@ class Stem.Model
 
   # Set attributes.
   set: (attributes) ->
+    # Prevent the frequent API error of trying to call set with an array of parameters like `set "key", "value"`
+    throw "Illegal attributes argument, expecting object" if _.isString(attributes)
+
     changes = []
 
     # Prevent reentrancy of the global change event (see below)

@@ -23,7 +23,10 @@ class Stem.Collection
 
   _add: (model) ->
     unless model instanceof Stem.Model
-      model = new (@model(model))(model)
+      # If the model attribute is a Model constructor, use it, else resolve at
+      # runtime the constructor using the passed attributes
+      ctor = if @model.prototype instanceof Stem.Model then @model else @model.call(this, model)
+      model = new ctor model
     model.bind "*", @_modelEvents
     @models.push model
 

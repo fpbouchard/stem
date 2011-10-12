@@ -33,31 +33,6 @@ describe "View", ->
 
       domSpy.restore()
 
-  describe "invalidation", ->
-
-    it "should handle invalidation and rendering through model updates", ->
-      class InvalidateView extends Stem.View
-        constructor: ->
-          super
-          @model.bind "change:title, change:body", @invalidate
-
-      model = new Stem.Model
-      view = new InvalidateView model: model
-
-      spy = sinon.spy view, "render"
-
-      # This is not a bound field, spy should not have been called
-      model.set foo: "bar"
-      (expect spy).not.toHaveBeenCalled()
-
-      # Even if two listened properties changed, render is called only once
-      model.set title: "new title", body: "new body"
-      (expect spy).toHaveBeenCalledOnce()
-
-      # This is not a bound field, spy should not have been called again
-      model.set foo: "bar"
-      (expect spy).toHaveBeenCalledOnce()
-
   describe "delegates", ->
     it "should validate delegate descriptors", ->
       instanciateDelegatedView = (delegates) ->
@@ -94,8 +69,16 @@ describe "View", ->
 
       domSpy.restore()
 
-  describe "with prototype-level bindings", ->
-    it "should bind to model events at construction time (function handler)", ->
+  describe "bindings", ->
+    it "should prevent passing both the 'model' and 'collection' attributes", ->
+      shouldFail = ->
+        new Stem.View
+          model: new Stem.Model
+          collection: new Stem.Collection
+
+      expect(shouldFail).toThrow()
+
+    it "should bind to model events (function handler)", ->
       callback = sinon.spy()
 
       class BoundView extends Stem.View
@@ -110,7 +93,7 @@ describe "View", ->
       model.set title: "title"
       (expect callback).toHaveBeenCalled()
 
-    it "should bind to model events at construction time (method handler)", ->
+    it "should bind to model events (method handler)", ->
       class BoundView extends Stem.View
         @bindings
           "change:title": "callback"
@@ -125,3 +108,44 @@ describe "View", ->
       (expect callback).not.toHaveBeenCalled()
       model.set title: "title"
       (expect callback).toHaveBeenCalled()
+
+    it "should bind to collection events", ->
+      callback = sinon.spy()
+
+      class BoundView extends Stem.View
+        @bindings
+          "change:title": callback
+
+      collection = new Stem.Collection {title: "one"}, {title: "two"}
+      new BoundView collection: collection
+
+      collection.at(0).set title: "modified"
+      expect(callback).toHaveBeenCalledOnce()
+      collection.at(1).set title: "modified"
+      expect(callback).toHaveBeenCalledTwice()
+
+  describe "invalidation", ->
+
+    it "should handle invalidation and rendering through model updates", ->
+      class InvalidateView extends Stem.View
+        constructor: ->
+          super
+          @model.bind "change:title, change:body", @invalidate
+
+      model = new Stem.Model
+      view = new InvalidateView model: model
+
+      spy = sinon.spy view, "render"
+
+      # This is not a bound field, spy should not have been called
+      model.set foo: "bar"
+      (expect spy).not.toHaveBeenCalled()
+
+      # Even if two listened properties changed, render is called only once
+      model.set title: "new title", body: "new body"
+      (expect spy).toHaveBeenCalledOnce()
+
+      # This is not a bound field, spy should not have been called again
+      model.set foo: "bar"
+      (expect spy).toHaveBeenCalledOnce()
+
