@@ -8,3 +8,7 @@
 #= require lib/view
 
 window.Stem ?= {}
+
+# Deep/shallow clones an object
+Stem.clone = (obj, deep = true) ->
+  if deep then JSON.parse(JSON.stringify obj) else _.clone(obj)

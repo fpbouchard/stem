@@ -27,7 +27,7 @@ class Stem.Model
   # Note that attributes passed at instanciation win over default, class-level values.
   #
   constructor: (attributes = {}) ->
-    attributes = (_.extend {}, @defaults, attributes) if @defaults
+    attributes = (_.extend {}, Stem.clone(@defaults), attributes) if @defaults
     @attributes = attributes
 
   # Get an attribute's value, by its key.
@@ -69,3 +69,12 @@ class Stem.Model
       @_changing = false
 
     this
+
+  snapshot: () ->
+    @currentSnapshot = Stem.clone(@attributes)
+
+  restore: (attrs...) ->
+    attrs = _.flatten attrs
+    restoreValues = {}
+    restoreValues[attr] = @currentSnapshot[attr] for attr in attrs
+    @set restoreValues

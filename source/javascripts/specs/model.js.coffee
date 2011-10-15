@@ -11,14 +11,21 @@ describe "Model", ->
     describe "with attributes", ->
 
       post = null
+      poster =
+        firstName: "John"
+        lastName: "Doe"
 
       beforeEach ->
         post = new Post
           title: "title"
+          poster: poster
 
       it "should be initialized with initial values", ->
         (expect post["attributes"]).toBeDefined()
         (expect post.attributes["title"]).toEqual "title"
+
+      it "should use the initial values by reference (not cloned)", ->
+        expect(post.get "poster").toBe poster
 
       it "should get an attribute", ->
         (expect post.get "title").toEqual "title"
@@ -81,24 +88,74 @@ describe "Model", ->
         post.set title: "title", foo: "bar"
         (expect callback).toHaveBeenCalledWith(post, ["foo"])
 
-    describe "with defaults", ->
+  describe "with defaults", ->
 
-      class PostWithDefaults extends Stem.Model
-        defaults:
-          title: "default"
-          body: "body"
+    poster =
+      firstName: "John"
+      lastName: "Doe"
 
-      it "should initialize with its defaults", ->
-        post = new PostWithDefaults
-        (expect post.get "title").toEqual "default"
-        (expect post.get "body").toEqual "body"
+    class PostWithDefaults extends Stem.Model
+      defaults:
+        title: "default"
+        body: "body"
+        poster: poster
 
-      it "should priorize attributes passed at the constructor over its defaults", ->
-        post = new PostWithDefaults
-          title: "overridden"
-        (expect post.get "title").toEqual "overridden"
-        (expect post.get "body").toEqual "body"
+    it "should initialize with its defaults", ->
+      post = new PostWithDefaults
+      (expect post.get "title").toEqual "default"
+      (expect post.get "body").toEqual "body"
 
+    it "should priorize attributes passed at the constructor over its defaults", ->
+      post = new PostWithDefaults
+        title: "overridden"
+      (expect post.get "title").toEqual "overridden"
+      (expect post.get "body").toEqual "body"
+
+    it "should deep copy from its defaults when building an instance", ->
+      post = new PostWithDefaults
+      expect(post.get "poster").not.toBe poster
+
+  describe "snapshots", ->
+
+    it "should allow taking a snapshot of the current objects", ->
+
+      post = new Stem.Model
+        title: "new"
+
+      expect(post.currentSnapshot).toBeUndefined()
+      post.snapshot()
+      expect(post.currentSnapshot).toBeDefined()
+      expect(post.currentSnapshot["title"]).toEqual "new"
+
+    it "should make deep copies for snapshots", ->
+      poster =
+        firstName: "John"
+        lastName: "Smith"
+      post = new Stem.Model
+        title: "new"
+        poster: poster
+
+      expect(post.get "poster").toBe poster
+      post.snapshot()
+      expect(post.currentSnapshot["poster"]).not.toBe poster
+
+    it "should allow restoring attributes from snapshots", ->
+      post = new Stem.Model
+        title: "new"
+      post.snapshot()
+      post.set title: "changed"
+      post.restore "title"
+      expect(post.get "title").toEqual "new"
+
+    it "should allow restoring multiple attributes from snapshots", ->
+      post = new Stem.Model
+        title: "new"
+        body: "body"
+      post.snapshot()
+      post.set title: "changed", body: "also changed"
+      post.restore "title", "body"
+      expect(post.get "title").toEqual "new"
+      expect(post.get "body").toEqual "body"
 
   describe "A model with hooks", ->
     class Post extends Stem.Model

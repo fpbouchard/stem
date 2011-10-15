@@ -59,40 +59,84 @@ describe "Collection", ->
       collection.reset.apply collection, models
       expect(collection.size()).toEqual 2
 
-  it "should allow to create a new Stem.Model subclass from attributes when adding (wrapped constructor)", ->
-    class SampleModel extends Stem.Model
-    class SampleCollection extends Stem.Collection
-      model: -> SampleModel
-    collection = new SampleCollection
-      name: "Peter"
-    expect(collection.size()).toEqual 1
-    expect(collection.at(0) instanceof SampleModel).toBeTruthy()
-    expect(collection.at(0).get "name").toEqual "Peter"
+  describe "events", ->
+    it "should trigger an event when a model is added", ->
+      callback = sinon.spy()
+      collection = new Stem.Collection
+      collection.bind "add", callback
 
-  it "should allow to create a new Stem.Model subclass from attributes when adding (direct constructor)", ->
-    class SampleModel extends Stem.Model
-    class SampleCollection extends Stem.Collection
-      model: SampleModel
-    collection = new SampleCollection
-      name: "Peter"
-    expect(collection.size()).toEqual 1
-    expect(collection.at(0) instanceof SampleModel).toBeTruthy()
-    expect(collection.at(0).get "name").toEqual "Peter"
+      model = new Stem.Model {name: "John"}
+      collection.add model
 
-  it "should allow polymorphism", ->
-    class ModelA extends Stem.Model
-    class ModelB extends Stem.Model
+      expect(callback).toHaveBeenCalledWith collection, model
 
-    class PolymorphicCollection extends Stem.Collection
-      model: (attributes) ->
-        if attributes["model"] == "ModelA" then ModelA else ModelB
+    it "should trigger an event when it is reset", ->
+      callback = sinon.spy()
+      collection = new Stem.Collection
+      collection.bind "reset", callback
 
-    collection = new PolymorphicCollection [
-      {model: "ModelA", name: "Peter"},
-      {model: "ModelB", name: "John"}
-    ]
-    expect(collection.size()).toEqual 2
-    expect(collection.at(0) instanceof ModelA).toBeTruthy()
-    expect(collection.at(1) instanceof ModelB).toBeTruthy()
-    expect(collection.at(0).get "name").toEqual "Peter"
-    expect(collection.at(1).get "name").toEqual "John"
+      collection.reset()
+
+      expect(callback).toHaveBeenCalledWith collection
+
+    it "should trigger add events and a reset event when it is reset with new models", ->
+      addCallback = sinon.spy()
+      resetCallback = sinon.spy()
+
+      collection = new Stem.Collection
+      collection.bind "add", addCallback
+      collection.bind "reset", resetCallback
+      collection.reset {name: "John"}, {name: "Peter"}
+
+      expect(addCallback).toHaveBeenCalledTwice()
+      expect(resetCallback).toHaveBeenCalledOnce()
+
+  describe "adding and removing", ->
+
+    it "should allow to create a new Stem.Model subclass from attributes when adding (wrapped constructor)", ->
+      class SampleModel extends Stem.Model
+      class SampleCollection extends Stem.Collection
+        model: -> SampleModel
+      collection = new SampleCollection
+        name: "Peter"
+      expect(collection.size()).toEqual 1
+      expect(collection.at(0) instanceof SampleModel).toBeTruthy()
+      expect(collection.at(0).get "name").toEqual "Peter"
+
+    it "should allow to create a new Stem.Model subclass from attributes when adding (direct constructor)", ->
+      class SampleModel extends Stem.Model
+      class SampleCollection extends Stem.Collection
+        model: SampleModel
+      collection = new SampleCollection
+        name: "Peter"
+      expect(collection.size()).toEqual 1
+      expect(collection.at(0) instanceof SampleModel).toBeTruthy()
+      expect(collection.at(0).get "name").toEqual "Peter"
+
+    it "should allow removing", ->
+      collection = new Stem.Collection
+      model = new Stem.Model {name: "John"}
+
+      collection.add model
+      expect(collection.indexOf(model)).toEqual 0
+
+      collection.remove model
+      expect(collection.indexOf(model)).toEqual -1
+
+    it "should allow polymorphism", ->
+      class ModelA extends Stem.Model
+      class ModelB extends Stem.Model
+
+      class PolymorphicCollection extends Stem.Collection
+        model: (attributes) ->
+          if attributes["model"] == "ModelA" then ModelA else ModelB
+
+      collection = new PolymorphicCollection [
+        {model: "ModelA", name: "Peter"},
+        {model: "ModelB", name: "John"}
+      ]
+      expect(collection.size()).toEqual 2
+      expect(collection.at(0) instanceof ModelA).toBeTruthy()
+      expect(collection.at(1) instanceof ModelB).toBeTruthy()
+      expect(collection.at(0).get "name").toEqual "Peter"
+      expect(collection.at(1).get "name").toEqual "John"
