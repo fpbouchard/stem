@@ -1,0 +1,58 @@
+<!DOCTYPE html>  <html> <head>   <title>collection.js.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>            <div id="jump_to">         Jump To &hellip;         <div id="jump_wrapper">           <div id="jump_page">                                           <a class="source" href="ajax.js.html">                 ajax.js.coffee               </a>                                           <a class="source" href="collection.js.html">                 collection.js.coffee               </a>                                           <a class="source" href="dom.js.html">                 dom.js.coffee               </a>                                           <a class="source" href="event.js.html">                 event.js.coffee               </a>                                           <a class="source" href="mixins.js.html">                 mixins.js.coffee               </a>                                           <a class="source" href="model.js.html">                 model.js.coffee               </a>                                           <a class="source" href="stem.js.html">                 stem.js.coffee               </a>                                           <a class="source" href="view.js.html">                 view.js.coffee               </a>                        </div>         </div>       </div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               collection.js.coffee             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="k">class</span> <span class="nx">Stem</span><span class="p">.</span><span class="nx">Collection</span>
+  <span class="nx">@implements</span> <span class="nx">Stem</span><span class="p">.</span><span class="nx">Events</span>
+
+  <span class="nv">constructor: </span><span class="nf">(models...) -&gt;</span>
+    <span class="vi">@models = </span><span class="p">[]</span>
+    <span class="nx">@add</span> <span class="nx">models</span> <span class="k">if</span> <span class="nx">models</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+  <span class="nv">model: </span><span class="nf">(attributes) -&gt;</span> <span class="nx">Stem</span><span class="p">.</span><span class="nx">Model</span>
+
+  <span class="nv">add: </span><span class="nf">(models...) -&gt;</span>
+    <span class="nv">models = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">models</span>
+    <span class="nx">@_add</span> <span class="nx">model</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nx">models</span>
+
+  <span class="nv">remove: </span><span class="nf">(models...) -&gt;</span>
+    <span class="nv">models = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span> <span class="nx">models</span>
+    <span class="nx">@_remove</span> <span class="nx">model</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nx">models</span>
+
+  <span class="nv">reset: </span><span class="nf">(models...) -&gt;</span>
+    <span class="nx">@_unbindModel</span> <span class="nx">model</span> <span class="k">for</span> <span class="nx">model</span> <span class="k">in</span> <span class="nx">@models</span>
+    <span class="vi">@models = </span><span class="p">[]</span>
+    <span class="nx">@add</span> <span class="nx">models</span>
+    <span class="nx">@trigger</span> <span class="s2">&quot;reset&quot;</span><span class="p">,</span> <span class="k">this</span>
+
+  <span class="nv">at: </span><span class="nf">(index) -&gt;</span>
+    <span class="nx">@models</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span>
+
+  <span class="nv">_modelEvents: </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">args</span><span class="p">...)</span> <span class="o">=&gt;</span>
+    <span class="nx">@trigger</span><span class="p">.</span><span class="nx">apply</span> <span class="k">this</span><span class="p">,</span> <span class="p">[</span><span class="nx">event</span><span class="p">,</span> <span class="k">this</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">args</span><span class="p">)</span>
+
+  <span class="nv">_add: </span><span class="nf">(model) -&gt;</span>
+    <span class="nx">unless</span> <span class="nx">model</span> <span class="k">instanceof</span> <span class="nx">Stem</span><span class="p">.</span><span class="nx">Model</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <p>If the model attribute is a Model constructor, use it, else resolve at
+runtime the constructor using the passed attributes</p>             </td>             <td class="code">               <div class="highlight"><pre>      <span class="nv">ctor = </span><span class="k">if</span> <span class="nx">@model</span><span class="p">.</span><span class="nx">prototype</span> <span class="k">instanceof</span> <span class="nx">Stem</span><span class="p">.</span><span class="nx">Model</span> <span class="k">then</span> <span class="nx">@model</span> <span class="k">else</span> <span class="nx">@model</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">model</span><span class="p">)</span>
+      <span class="nv">model = </span><span class="k">new</span> <span class="nx">ctor</span> <span class="nx">model</span>
+    <span class="nx">model</span><span class="p">.</span><span class="nx">bind</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="nx">@_modelEvents</span>
+    <span class="nx">@models</span><span class="p">.</span><span class="nx">push</span> <span class="nx">model</span>
+    <span class="nx">@trigger</span> <span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">model</span>
+
+  <span class="nv">_remove: </span><span class="nf">(model) -&gt;</span>
+    <span class="nv">idx = </span><span class="nx">_</span><span class="p">.</span><span class="nx">indexOf</span> <span class="nx">@models</span><span class="p">,</span> <span class="nx">model</span>
+    <span class="k">return</span> <span class="kc">null</span> <span class="k">if</span> <span class="nx">idx</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="nx">@models</span><span class="p">.</span><span class="nx">splice</span> <span class="nx">idx</span><span class="p">,</span> <span class="mi">1</span>
+    <span class="nx">@_unbindModel</span> <span class="nx">model</span>
+    <span class="nx">@trigger</span> <span class="s2">&quot;remove&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">model</span>
+
+  <span class="nv">_unbindModel: </span><span class="nf">(model) -&gt;</span>
+    <span class="nx">model</span><span class="p">.</span><span class="nx">unbind</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="nx">@_modelEvents</span>
+
+  <span class="nv">methods = </span><span class="p">[</span><span class="s1">&#39;forEach&#39;</span><span class="p">,</span> <span class="s1">&#39;each&#39;</span><span class="p">,</span> <span class="s1">&#39;map&#39;</span><span class="p">,</span> <span class="s1">&#39;reduce&#39;</span><span class="p">,</span> <span class="s1">&#39;reduceRight&#39;</span><span class="p">,</span> <span class="s1">&#39;find&#39;</span><span class="p">,</span> <span class="s1">&#39;detect&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;filter&#39;</span><span class="p">,</span> <span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="s1">&#39;reject&#39;</span><span class="p">,</span> <span class="s1">&#39;every&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="s1">&#39;some&#39;</span><span class="p">,</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span> <span class="s1">&#39;include&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;contains&#39;</span><span class="p">,</span> <span class="s1">&#39;invoke&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">,</span> <span class="s1">&#39;sortBy&#39;</span><span class="p">,</span> <span class="s1">&#39;sortedIndex&#39;</span><span class="p">,</span> <span class="s1">&#39;toArray&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;without&#39;</span><span class="p">,</span> <span class="s1">&#39;indexOf&#39;</span><span class="p">,</span> <span class="s1">&#39;lastIndexOf&#39;</span><span class="p">,</span> <span class="s1">&#39;isEmpty&#39;</span><span class="p">,</span> <span class="s1">&#39;groupBy&#39;</span><span class="p">]</span>
+
+  <span class="k">for</span> <span class="nx">method</span> <span class="k">in</span> <span class="nx">methods</span>
+    <span class="nx">do</span> <span class="p">(</span><span class="nx">method</span><span class="p">)</span> <span class="o">=&gt;</span>
+      <span class="err">@</span><span class="o">::</span><span class="p">[</span><span class="nx">method</span><span class="p">]</span> <span class="o">=</span> <span class="o">-&gt;</span>
+        <span class="nx">_</span><span class="p">[</span><span class="nx">method</span><span class="p">].</span><span class="nx">apply</span> <span class="nx">_</span><span class="p">,</span> <span class="p">[</span><span class="nx">@models</span><span class="p">].</span><span class="nx">concat</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">toArray</span><span class="p">(</span><span class="nx">arguments</span><span class="p">))</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
