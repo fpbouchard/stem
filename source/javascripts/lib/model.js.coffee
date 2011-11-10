@@ -26,9 +26,8 @@ class Stem.Model
   #
   # Note that attributes passed at instanciation win over default, class-level values.
   #
-  constructor: (attributes = {}) ->
-    attributes = (_.extend {}, Stem.clone(@defaults), attributes) if @defaults
-    @attributes = attributes
+  constructor: (@attributes = {}) ->
+    _.defaults(@attributes, Stem.clone(@defaults)) if @defaults
 
   # Get an attribute's value, by its key.
   get: (attribute) ->

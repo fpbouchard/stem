@@ -114,6 +114,7 @@ describe "Model", ->
     it "should deep copy from its defaults when building an instance", ->
       post = new PostWithDefaults
       expect(post.get "poster").not.toBe poster
+      expect(post.get "poster").toEqual poster
 
   describe "snapshots", ->
 
@@ -138,6 +139,7 @@ describe "Model", ->
       expect(post.get "poster").toBe poster
       post.snapshot()
       expect(post.currentSnapshot["poster"]).not.toBe poster
+      expect(post.currentSnapshot["poster"]).toEqual poster
 
     it "should allow restoring attributes from snapshots", ->
       post = new Stem.Model

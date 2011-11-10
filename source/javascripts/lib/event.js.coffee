@@ -3,7 +3,7 @@
 #
 # *Stem.Events* is a *mixin* that allows objects to trigger events and allow other object to bind and unbind from them.
 #
-# As is defined in [base.js.coffee](base.js.html), the `@implements` class method should be used to implement the mixin:
+# As is defined in [mixins.js.coffee](mixins.js.html), the `@implements` class method should be used to implement the mixin:
 #
 #     class MyEventableClass
 #       @implements Stem.Events
@@ -44,7 +44,7 @@ class Stem.Events
       # Lazy init the handler array for this event
       handlers = @bindings[event] ||= []
       # Do not register the same event/handler combination twice, just ignore
-      handlers.push handler if _.indexOf(handlers, handler) < 0
+      handlers.push handler unless handler in handlers
     this
 
   # Unbinds a specific event/handler combination.

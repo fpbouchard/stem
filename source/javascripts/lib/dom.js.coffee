@@ -6,10 +6,10 @@ Stem.DOM =
 
 # Implementations
 
-if window.Prototype?
+if Prototype?
   Stem.DOM.select = (expression) -> Prototype.Selector.select(expression, document)
   Stem.DOM.delegate = (element, selector, eventName, handler) -> Event.on(element, eventName, selector, handler)
 
-if window.jQuery?
+if jQuery?
   Stem.DOM.select = window.jQuery
-  Stem.DOM.delegate = (element, selector, eventName, handler) -> $(element).delegate(selector, eventName, handler)
+  Stem.DOM.delegate = (element, selector, eventName, handler) -> jQuery(element).delegate(selector, eventName, handler)
