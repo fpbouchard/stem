@@ -59,6 +59,10 @@ describe "Collection", ->
       collection.reset.apply collection, models
       expect(collection.size()).toEqual 2
 
+    it "should implement underscore.js's collection helpers", ->
+      expect(collection['map']).toBeDefined()
+      expect(collection['select']).toBeDefined()
+
   describe "events", ->
     it "should trigger an event when a model is added", ->
       callback = sinon.spy()

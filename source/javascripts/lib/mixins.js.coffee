@@ -1,5 +1,5 @@
 # CoffeeScript Mixins, from https://github.com/jashkenas/coffee-script/wiki/Mixins
-implements = (classes...) ->
+include = (classes...) ->
   for klass in classes
     # static properties
     for prop of klass
@@ -18,11 +18,11 @@ implements = (classes...) ->
 
 defineProperty = Object.defineProperty
 try
-  Object.defineProperty({}, 'x', {}) if defineProperty
+  Object.defineProperty({}, 'x', {}) if defineProperty?
 catch error
   defineProperty = false
 
 if defineProperty
-  Object.defineProperty Function.prototype, "implements", value : implements
+  Object.defineProperty Function.prototype, "include", value: include
 else
-  Function::implements = implements
+  Function::include = include

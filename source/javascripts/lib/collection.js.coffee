@@ -1,5 +1,5 @@
 class Stem.Collection
-  @implements Stem.Events
+  @include Stem.Events
 
   constructor: (models...) ->
     @models = []
@@ -54,5 +54,5 @@ class Stem.Collection
 
   for method in methods
     do (method) =>
-      @::[method] = ->
-        _[method].apply _, [@models].concat(_.toArray(arguments))
+      @::[method] = (args...) ->
+        _[method](@models, args...)

@@ -15,7 +15,7 @@
 #     expect(context.get "mode").toEqual "standard"
 #
 class Stem.Model
-  @implements Stem.Events
+  @include Stem.Events
 
   # The **Model** constructor also allows to set initial attributes in the model by passing the hash directly:
   #

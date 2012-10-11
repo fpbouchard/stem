@@ -3,10 +3,10 @@
 #
 # *Stem.Events* is a *mixin* that allows objects to trigger events and allow other object to bind and unbind from them.
 #
-# As is defined in [mixins.js.coffee](mixins.js.html), the `@implements` class method should be used to implement the mixin:
+# As is defined in [mixins.js.coffee](mixins.js.html), the `@include` class method should be used to implement the mixin:
 #
 #     class MyEventableClass
-#       @implements Stem.Events
+#       @include Stem.Events
 #
 # Event Descriptors
 # =================

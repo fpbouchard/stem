@@ -5,7 +5,7 @@ delegateDescriptorPattern = ///
 ///
 
 class Stem.View
-  @implements Stem.Events
+  @include Stem.Events
 
   @bindings = (bindings) ->
     _.extend @_bindings ||= {}, bindings
