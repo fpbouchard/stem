@@ -1,4 +1,4 @@
-Ajax = Stem.Ajax =
+Stem.Ajax =
   request: (url, parameters = {}) -> null
   processResponseCommands: (commands) ->
     for command in commands
@@ -19,6 +19,13 @@ Ajax = Stem.Ajax =
           throw "Unknown ajax response command: '#{command.action}'"
 
 if window.Prototype?
+  Stem.Ajax.request = (url, parameters = {}) ->
+    new Ajax.Request url,
+      method: "POST"
+      contentType: "application/json"
+      parameters: parameters
+      onSuccess: (response) ->
+        Stem.Ajax.processResponseCommands response.responseJSON
   null
 
 if window.jQuery?
@@ -27,4 +34,4 @@ if window.jQuery?
       type: "POST"
       dataType: "json"
       success: (data, textStatus, jqXHR) ->
-        Ajax.processResponseCommands data
+        Stem.Ajax.processResponseCommands data

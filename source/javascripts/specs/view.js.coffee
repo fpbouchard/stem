@@ -38,6 +38,7 @@ describe "View", ->
       instanciateDelegatedView = (delegates) ->
         ->
           class DelegatedView extends Stem.View
+            el: "body"
             @delegates delegates
           new DelegatedView
       expect(instanciateDelegatedView "eventName selector": ->).not.toThrow()
@@ -48,6 +49,7 @@ describe "View", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
       class DelegatedView extends Stem.View
+        el: "body"
         @delegates
           "click .me": ->
 
@@ -60,6 +62,7 @@ describe "View", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
       class DelegatedView extends Stem.View
+        el: "body"
         @delegates
           "click .me": "clickme"
         clickme: ->

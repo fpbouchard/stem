@@ -17,7 +17,7 @@ class Stem.View
     # Views can be initialized with attributes
     @[attribute] = value for attribute, value of attributes
     throw "Cannot bind to both a model and a collection" if @model? && @collection?
-    @bindable = @model || @collection
+    @bindable = @model ? @collection
     @_installBindings()
     @_resolveElement()
     @_installDelegates()
@@ -29,7 +29,7 @@ class Stem.View
     @el = Stem.DOM.select(@el)[0] if _.isString(@el)
 
   _installDelegates: ->
-    return unless @constructor._delegates?
+    return unless @constructor._delegates? and @el?
     for delegateDescriptor, handler of @constructor._delegates
       matches = delegateDescriptor.match delegateDescriptorPattern
       throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
