@@ -124,6 +124,14 @@ describe "View", ->
       collection.at(1).set title: "modified"
       expect(callback).toHaveBeenCalledTwice()
 
+  describe "rendering", ->
+    it "should render when instanciated", ->
+      class RenderView extends Stem.View
+        render: -> @rendered = true
+
+      view = new RenderView
+      (expect view.rendered).toBeTruthy()
+
   describe "invalidation", ->
 
     it "should handle invalidation and rendering through model updates", ->

@@ -21,6 +21,8 @@ class Stem.View
     @_installBindings()
     @_resolveElement()
     @_installDelegates()
+    # Render newly instanciated view
+    @render()
 
   _resolveElement: ->
     return unless @el

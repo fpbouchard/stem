@@ -31,5 +31,3 @@ context = new Context
 
 modeWidget = new ModeWidget
   model: context
-
-modeWidget.render()
