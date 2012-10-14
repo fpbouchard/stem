@@ -15,7 +15,7 @@ class ModeWidget extends Stem.View
     <a href="javascript:void(0)" class="toggle">Toggle!</a>
   '''
 
-  @delegates
+  @events
     "click a.toggle": "toggleMode"
 
   @bindings

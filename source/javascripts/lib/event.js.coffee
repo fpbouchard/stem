@@ -37,12 +37,12 @@ class Stem.Events
   # event/handler twice will not fail, but will be silently ignored.
   bind: (eventDescriptor, handler) ->
     # Lazy init the `@bindings` instance variable
-    @bindings ||= {}
+    @bindings ?= {}
     events = eventDescriptor.split eventDescriptorSplitter
     # Bind every event in the descriptor individually
     for event in events
       # Lazy init the handler array for this event
-      handlers = @bindings[event] ||= []
+      handlers = @bindings[event] ?= []
       # Do not register the same event/handler combination twice, just ignore
       handlers.push handler unless handler in handlers
     this

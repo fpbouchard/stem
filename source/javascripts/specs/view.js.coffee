@@ -33,41 +33,42 @@ describe "View", ->
 
       domSpy.restore()
 
-  describe "delegates", ->
-    it "should validate delegate descriptors", ->
-      instanciateDelegatedView = (delegates) ->
+  describe "events", ->
+    it "should validate event descriptors", ->
+      instanciateEventedView = (events) ->
         ->
-          class DelegatedView extends Stem.View
+          class EventedView extends Stem.View
             el: "body"
-            @delegates delegates
-          new DelegatedView
-      expect(instanciateDelegatedView "eventName selector": ->).not.toThrow()
-      expect(instanciateDelegatedView "no-selector": ->).toThrow()
-      expect(instanciateDelegatedView "": ->).toThrow()
+            @events events
+          new EventedView
+      expect(instanciateEventedView "eventName": ->).not.toThrow()
+      expect(instanciateEventedView "eventName selector": ->).not.toThrow()
+      expect(instanciateEventedView "eventName selectorA, selectorB": ->).not.toThrow()
+      expect(instanciateEventedView "": ->).toThrow()
 
-    it "should install delegates on the view element (function handler)", ->
+    it "should install delegated events on the view element (function handler)", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
-      class DelegatedView extends Stem.View
+      class EventedView extends Stem.View
         el: "body"
-        @delegates
+        @events
           "click .me": ->
 
-      view = new DelegatedView
+      view = new EventedView
       (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()
 
-    it "should install delegates on the view element (method handler)", ->
+    it "should install delegated events on the view element (method handler)", ->
       domSpy = sinon.spy(Stem.DOM, "delegate")
 
-      class DelegatedView extends Stem.View
+      class EventedView extends Stem.View
         el: "body"
-        @delegates
+        @events
           "click .me": "clickme"
         clickme: ->
 
-      view = new DelegatedView
+      view = new EventedView
       (expect domSpy).toHaveBeenCalled()
 
       domSpy.restore()

@@ -1,17 +1,19 @@
-delegateDescriptorPattern = ///
+eventDescriptorPattern = ///
+  ^
   (\S+) # Non-whitespace for the event name
-  \s+   # Whitespace that splits the event name from the delegate selector
-  (.+)  # Delegate selector
+  \s*   # Whitespace that splits the event name from the event selector
+  (.*)  # event selector
+  $
 ///
 
 class Stem.View
   @include Stem.Events
 
   @bindings = (bindings) ->
-    _.extend @_bindings ||= {}, bindings
+    _.extend @_bindings ?= {}, bindings
 
-  @delegates = (delegates) ->
-    _.extend @_delegates ||= {}, delegates
+  @events = (events) ->
+    _.extend @_events ?= {}, events
 
   constructor: (attributes = {}) ->
     # Views can be initialized with attributes
@@ -20,7 +22,7 @@ class Stem.View
     @bindable = @model ? @collection
     @_installBindings()
     @_resolveElement()
-    @_installDelegates()
+    @_installEvents()
     # Render newly instanciated view
     @render()
 
@@ -28,14 +30,14 @@ class Stem.View
     return unless @el
     @el = Stem.DOM.select(@el)[0] if _.isString(@el)
 
-  _installDelegates: ->
-    return unless @constructor._delegates? and @el?
-    for delegateDescriptor, handler of @constructor._delegates
-      matches = delegateDescriptor.match delegateDescriptorPattern
-      throw "Invalid delegate descriptor: \"#{delegateDescriptor}\"" unless matches?
+  _installEvents: ->
+    return unless @constructor._events? and @el?
+    for eventDescriptor, handler of @constructor._events
+      matches = eventDescriptor.match eventDescriptorPattern
+      throw "Invalid event descriptor: \"#{eventDescriptor}\"" unless matches?
       [match, eventName, selector] = matches
       if _.isString(handler)
-        throw "Undefined delegate callback: \"#{handler}\"" unless handler = @[handler]
+        throw "Undefined event callback: \"#{handler}\"" unless handler = @[handler]
       Stem.DOM.delegate @el, selector, eventName, handler
 
   _installBindings: ->
